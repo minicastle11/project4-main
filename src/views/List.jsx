@@ -23,14 +23,20 @@ function Card({ item, onClick }) {
       <img className="list-book-image" src={imageSrc} alt={item.title} />
       <div className="list-book-content">
         <h3>{item.title}</h3>
-        <p className="list-book-author">작가: {item.author || '저자 미상'}</p>
-        <em>좋아요 {item.likes || 0}</em>
+        <div className="list-book-meta">
+          <p className="list-book-author">작가: {item.author || '저자 미상'}</p>
+          <div className="list-book-meta-right">
+            <em>좋아요 {item.likes || 0}</em>
+            <span className="list-book-views">조회 {item.views || 0}</span>
+            
+          </div>
+        </div>
       </div>
     </article>
   )
 }
 
-export default function List({ query = '', books = [], onDelete, onLike }) {
+export default function List({ query = '', books = [], onDelete, onLike, onView }) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
@@ -60,6 +66,9 @@ export default function List({ query = '', books = [], onDelete, onLike }) {
   const handleOpen = (item) => {
     setSelectedId(item.id)
     setOpen(true)
+    if (item && item.id) {
+      onView(item.id);
+    }
   }
 
   const handleClose = () => {
@@ -135,6 +144,8 @@ export default function List({ query = '', books = [], onDelete, onLike }) {
               <div className="book-like-info">
                 <span>좋아요</span>
                 <strong>{selected.likes || 0}</strong>
+                <span>조회수</span>
+                <strong>{selected.views || 0}</strong>
               </div>
                 <button
                 type="button"
