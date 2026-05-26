@@ -45,10 +45,10 @@ export default function Update({ bookURL, onUpdate }) {
   if (error) return <p className="error-text">에러: {error}</p>;
 
   return (
-    <div className="update-container">
+    <section className="create-write-page">
       <h2 className="update-title">도서 정보 수정</h2>
-      <form onSubmit={handleSubmit} className="update-form">
-        
+      <form onSubmit={handleSubmit} className="create-write-form">
+        {/* <div className="create-write-form"></div> */}
         <div className="form-group">
           <label htmlFor="title">제목</label>
           <input 
@@ -78,15 +78,16 @@ export default function Update({ bookURL, onUpdate }) {
             value={content} 
             onChange={(e) => setContent(e.target.value)} 
             required 
+            rows="8" cols="50"
           />
         </div>
         
         <div className="button-group">
-          <button type="submit" className="btn submit-btn">수정 완료</button>
-          <button type="button" onClick={() => navigate('/list')} className="btn cancel-btn">취소</button>
+          <button type="submit" className="create-submit-button">수정 완료</button>
+          <button type="button" className="create-preview-button" onClick={() => navigate('/list')}>취소</button>
         </div>
 
       </form>
-    </div>
+    </section>
   )
 }
