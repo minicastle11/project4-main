@@ -10,6 +10,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
     const [coverImageUrl, setCoverImageUrl] = useState('./test_src/01.png');
     
     const [loading, setLoading] = useState(false);
+    const [showImg, setShowImg] = useState('');
 
     useEffect(() => {
         const day = new Date();
@@ -107,6 +108,10 @@ function CreateImageForm({title, author, content, onAddBook}) {
         }
     }
     
+    function handleImgView() {
+        setShowImg(coverImageUrl);
+    }
+
     return (
         <form className="create-write-layout">
             <div className="create-write-form">
@@ -136,7 +141,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
                     <button
                         type="button"
                         className="create-submit-button"
-                        onClick={handleFinalForm}
+                        onClick={handleImgView}
                     >
                         등록하기
                     </button>
@@ -145,7 +150,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
 
             <aside className="create-preview-card">
                 <div className="create-preview-image-box">
-                    <img src={coverImageUrl} alt="book cover" />
+                    <img src={showImg} alt="book cover" />
                 </div>
 
                 <strong>이미지 미리보기</strong>
