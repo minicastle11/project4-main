@@ -30,6 +30,9 @@ function Home({ books = [] }) {
       </p>
 
       {/* UI/레이아웃팀 담당: 좋아요 순 인기 도서 카드 레이아웃 */}
+      {popularBooks.length === 0 ? (
+        <p className="home-empty-message">등록된 도서가 없습니다.</p>
+      ) : (
       <div className="home-book-grid">
         {popularBooks.map((book) => {
         const imageSrc =
@@ -53,6 +56,7 @@ function Home({ books = [] }) {
           )
         })}
       </div>
+      )}
     </section>
   )
 }

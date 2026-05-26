@@ -1089,3 +1089,19 @@
   height: 100%;
   object-fit: cover;
 }
+
+.list-state-message {
+  margin: 48px auto;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.home-empty-message {
+  margin: 40px 0;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
