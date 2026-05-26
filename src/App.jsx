@@ -40,11 +40,18 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBook),
       })
+
+      if (!res.ok) {
+        throw new Error('도서 등록에 실패했습니다.')
+      }
+
       const saved = await res.json()
-      setBooks([saved, ...books])
+
+      setBooks((prevBooks) => [saved, ...prevBooks])
       navigate('/list')
     } catch (err) {
       console.error(err)
+      setError(err.message || '도서 등록에 실패했습니다.')
     }
   }
 
@@ -56,8 +63,19 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
       })
+
+      if (!res.ok) {
+        throw new Error('도서 수정에 실패했습니다.')
+      }
+
       const updated = await res.json()
-      setBooks(books.map((book) => (book.id === id ? updated : book)))
+
+      setBooks((prevBooks) =>
+        prevBooks.map((book) =>
+          String(book.id) === String(id) ? updated : book
+        )
+      )
+
       navigate('/list')
     } catch (err) {
       console.error(err)

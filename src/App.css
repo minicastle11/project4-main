@@ -1089,14 +1089,18 @@
   object-fit: cover;
 }
 
-.empty-state {
-  grid-column: 1 / -1; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 80px 0;
-  color: var(--color-muted);
-  font-size: 16px;
-  font-weight: 700;
+.list-state-message {
+  margin: 48px auto;
   text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.home-empty-message {
+  margin: 40px 0;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
 }
