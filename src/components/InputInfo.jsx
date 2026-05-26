@@ -1,17 +1,39 @@
-import { useState } from 'react'
+function InputInfo({ title, setTitle, author, setAuthor, content, setContent }) {
+  return (
+    <>
+      <div className="create-two-columns">
+        <label>
+          도서 제목
+          <input
+            value={title}
+            placeholder="제목"
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </label>
 
-function  InputInfo({title, setTitle, author, setAuthor, content, setContent}) {
+        <label>
+          작가 이름
+          <input
+            value={author}
+            placeholder="작가 이름"
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+        </label>
+      </div>
 
-    return (<>
-        <form>
-            <h2>제목</h2>
-            <input value={title} onChange={(e) => setTitle(e.target.value)}></input>
-            <h2>저자</h2>
-            <input value={author} onChange={(e) => setAuthor(e.target.value)}></input>
-            <h2>내용</h2>
-            <input value={content} onChange={(e) => setContent(e.target.value)}></input>
-        </form>
-    </>)
+      <label>
+        내용
+        <textarea
+          value={content}
+          placeholder="내용"
+          rows={8}
+          maxLength={100}
+          onChange={(e) => setContent(e.target.value)}
+        />
+        <span className="create-count">{content.length}/100</span>
+      </label>
+    </>
+  )
 }
 
-export default InputInfo;
+export default InputInfo

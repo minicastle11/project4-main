@@ -5,7 +5,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
     const [today, setToday] = useState('');
     const [createdAt, setCreatedAt] = useState('');
     const [updatedAt, setUpdatedAt] = useState('');
-    const [quality, setQuality] = useState('middle');
+    const [quality, setQuality] = useState('medium');
     const [ai_api_key, setAi_api_key] = useState('');
     const [coverImageUrl, setCoverImageUrl] = useState('./test_src/01.png');
     
@@ -18,88 +18,6 @@ function CreateImageForm({title, author, content, onAddBook}) {
         setCreatedAt(day);
         setUpdatedAt(day);
     }, []);
-    
-    // const handleAIImage = async () => {
-    //     const prompt = `
-    //                     # 역할
-    //                     너는 북커버 제작 담당자야. 
-                        
-    //                     # 지침
-    //                     - 북커버의 앞면 표지만을 보여줄 것
-    //                     - 전문적인 북커버 디자인, 높은 퀄리티의 일러스트레이션, 두드러진 시각적 표현, 작품에 적합한 안전성
-    //                     - 이야기의 분위기나 무드를 포함
-                        
-    //                     # 책 정보
-    //                     - 제목 : "${title}"
-    //                     - 내용 요약 : ${content}.
-    //                     `
-    //     // 1. AI Image 생성
-    //     try {
-    //         if (loading === false) {
-    //             setCoverImageUrl('./test_src/loading.gif');
-    //             setLoading(true);
-    //         }
-            
-    //         const res = await fetch('https://api.openai.com/v1/images/generations', {
-    //         method: 'POST',
-    //         headers: {'Content-Type': 'application/json',
-    //                   'Authorization': `Bearer ${API_KEY}`
-    //                  },
-    //         body: JSON.stringify({
-    //                                 model: 'gpt-image-1',
-    //                                 prompt,
-    //                                 n: 1,
-    //                                 size: '1024x1536',
-    //                                 quality,
-    //                                 output_format: 'png'
-    //                             }),
-    //                 });
-    //         setLoading(false);
-
-    //         if (!res.ok) {
-    //             setCoverImageUrl('./test_src/error.png');
-    //             const errData = await res.json().catch(() => ({}))
-    //             const status = res.status
-    //             if (status === 401) throw new Error('API Key가 올바르지 않습니다. 확인 후 다시 시도해주세요.')
-    //             if (status === 429) throw new Error('요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.')
-    //             throw new Error(errData?.error?.message || 'OpenAI 이미지 생성에 실패했습니다.')
-    //         }
-
-    //         const data = await res.json();
-    //         const b64Json = data?.data?.[0]?.b64_json;
-    //         if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
-            
-    //         const imageUrl = `data:image/png;base64,${b64Json}`;
-    //         const resizedImage = await resizeBase64Image(imageUrl, 512);
-    //         setCoverImageUrl(resizedImage);
-    //         } catch (err) { console.error(err); }
-    // }
-
-    
-    // function resizeBase64Image(base64, maxWidth = 512) {
-    // return new Promise((resolve) => {
-    //     const img = new Image();
-
-    //     img.src = base64;
-
-    //     img.onload = () => {
-    //         const canvas = document.createElement('canvas');
-    //         const ctx = canvas.getContext('2d');
-
-    //         const scale = maxWidth / img.width;
-
-    //         canvas.width = maxWidth;
-    //         canvas.height = img.height * scale;
-
-    //         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    //         // PNG 유지
-    //         const resizedBase64 = canvas.toDataURL('image/png');
-    //         setCoverImageUrl(resizedBase64)
-    //         resolve(resizedBase64);
-    //         };
-    //     });
-    // }
 
     const handleFinalForm = async () => {
             const prompt = `
@@ -152,11 +70,8 @@ function CreateImageForm({title, author, content, onAddBook}) {
             if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
             
             const imageUrl = `data:image/png;base64,${b64Json}`;
-            // const resizedImage = await resizeBase64Image(imageUrl, 512);
             setCoverImageUrl(imageUrl);
             } catch (err) { console.error(err); }
-            // 2. db 저장
-            // resizeBase64Image(coverImageUrl)
             
             const newBook = {
                 title,
@@ -186,26 +101,55 @@ function CreateImageForm({title, author, content, onAddBook}) {
             }
         }
     
-    return (<>
-    <form>
-        <div>
-            <p>OpenAI API Key:</p>
-            <input value={ai_api_key} onChange={(e) => setAi_api_key(e.target.value)}></input>
-            <p>품질 :</p> <Dropdown value={quality} onChange={setQuality} />
-        </div>
-        <div><img src={coverImageUrl} alt="book cover" style={{ width: '200px', height: 'auto'}}></img></div>
-        <div>
-            <h3>책 내용</h3>
-            <p>{content}</p>
-            <br></br>
-            <p>생성일 : {today}</p>
-            <p>수정일 : {today}</p>
-        </div>
-        <hr />
-        {/* <button type='button' onClick={handleAIImage}>이미지 생성</button> */}
-        <button type='button' onClick={handleFinalForm}>최종 제출</button>
-    </form>
-    </>)
+    return (
+        <form className="create-write-layout">
+            <div className="create-write-form">
+                <label>
+                    api키
+                    <input
+                        value={ai_api_key}
+                        placeholder="api키"
+                        onChange={(e) => setAi_api_key(e.target.value)}
+                    />
+                </label>
+
+                <div className="create-quality-group">
+                    <p>품질</p>
+                    <Dropdown value={quality} onChange={setQuality} />
+                </div>
+
+                <div className="create-action-row">
+                    <button
+                        type="button"
+                        className="create-preview-button"
+                        onClick={handleFinalForm}
+                    >
+                        이미지 미리보기
+                    </button>
+
+                    <button
+                        type="button"
+                        className="create-submit-button"
+                        onClick={handleFinalForm}
+                    >
+                        등록하기
+                    </button>
+                </div>
+            </div>
+
+            <aside className="create-preview-card">
+                <div className="create-preview-image-box">
+                    <img src={coverImageUrl} alt="book cover" />
+                </div>
+
+                <strong>이미지 미리보기</strong>
+                <p>선택된 품질: {quality}</p>
+                <span>
+                    입력 작성 후 이미지 미리보기를 누르면 표지가 먼저 생성하세요
+                </span>
+            </aside>
+        </form>
+    )
 };
 
 export default CreateImageForm;

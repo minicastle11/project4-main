@@ -1,30 +1,38 @@
 // import { fetchBooks, formatDate } from '../api.js'
-import { useState, useEffect } from 'react'
-import Dropdown from './Dropdown'
+import { useState } from 'react'
 import InputInfo from './InputInfo'
 import CreateImageForm from './CreateImageForm'
 
-function CreateForm({onAddBook}) {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [author, setAuthor] = useState('');
+function CreateForm({ onAddBook }) {
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [author, setAuthor] = useState('')
 
-    return (<>
-        <p> Create Form </p>
-        <section>
-            <h2>새글 작성</h2>
-            <InputInfo title={title} setTitle={setTitle}
-                       author={author} setAuthor={setAuthor}
-                       content={content} setContent={setContent} />
-            <hr />
-            <CreateImageForm
-              title={title}
-              author={author}
-              content={content}
-              onAddBook={onAddBook}
-            />
-        </section>
-    </>)
-};
+  return (
+    <section className="create-write-page">
+      <h2 className="create-write-title">새글작성</h2>
 
-export default CreateForm;
+      <div className="create-write-layout">
+        <div className="create-write-form">
+          <InputInfo
+            title={title}
+            setTitle={setTitle}
+            author={author}
+            setAuthor={setAuthor}
+            content={content}
+            setContent={setContent}
+          />
+
+          <CreateImageForm
+            title={title}
+            author={author}
+            content={content}
+            onAddBook={onAddBook}
+          />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default CreateForm
