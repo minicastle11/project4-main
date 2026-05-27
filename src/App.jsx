@@ -68,8 +68,6 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
       })
-      // Error: Payload too large. Limit: 102400 bytes
-      // res.ok === false 
       if (!res.ok) {
         throw new Error('도서 수정에 실패했습니다.')
       }
@@ -92,10 +90,8 @@ function App() {
 
   const handleDelete = async (id) => {
     try {
-      // 삭제할 도서 정보 찾기
       const book = books.find((b) => String(b.id) === String(id));
 
-      // 이미지 파일 삭제 요청 (있는 경우에만)
       if (book?.coverImageUrl?.includes('/images/')) {
         const filename = book.coverImageUrl.split('/images/')[1];
         if (filename) {
@@ -105,7 +101,6 @@ function App() {
         }
       }
 
-      // json-server에서 도서 삭제 (요청은 딱 한 번만!)
       const res = await fetch(`${bookURL}/${id}`, {
         method: 'DELETE',
       });
@@ -114,7 +109,6 @@ function App() {
         throw new Error('삭제에 실패했습니다.');
       }
 
-      // 프론트 상태 갱신
       setBooks((prevBooks) =>
         prevBooks.filter((b) => String(b.id) !== String(id))
       );
