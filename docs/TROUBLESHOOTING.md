@@ -1,63 +1,58 @@
 # 트러블슈팅
 
-이 문서는 프로젝트 진행 중 발생할 수 있는 주요 문제와 해결 방법을 정리합니다.
+프로젝트 진행 중 발생할 수 있는 주요 문제와 해결 방법을 정리한 문서입니다.
 
 ---
 
-## 1. OpenAI API Key를 프론트엔드에 직접 올리면 안 되는 문제
+## 1. OpenAI API Key 노출 문제
 
 ### 문제 상황
 
-처음에는 React 프론트엔드에서 API Key를 입력받아 OpenAI API로 직접 요청하는 방식으로 구현할 수 있습니다.
-하지만 이 방식은 다음 문제가 있습니다.
+React 프론트엔드에서 OpenAI API를 직접 호출하기 때문에,
+API Key가 브라우저 네트워크 탭에서 노출될 수 있습니다.
 
-- 브라우저 네트워크 탭에서 API Key가 노출될 수 있음
-- 프론트엔드 코드에 API Key가 포함될 위험이 있음
-- GitHub에 API Key가 올라갈 수 있음
-- 보안 및 정책상 적절하지 않음
+또한 실수로 GitHub에 업로드될 위험도 존재합니다.
 
-### 잘못된 구조
+---
 
-```text
-React Frontend
-→ OpenAI API
-```
-
-### 해결 구조
+### 현재 구조
 
 ```text
 React Frontend
-→ api_mid_server.js
+→ OpenAI Images API
+```
+
+현재 프로젝트는 학습용 프론트엔드 구조이므로
+사용자가 직접 API Key를 입력하는 방식을 사용합니다.
+
+---
+
+### 주의사항
+
+- API Key를 코드에 하드코딩하지 않기
+- `.env` 파일 또는 GitHub 업로드 금지
+- 화면 입력 후 메모리에서만 사용하기
+- 사용량 및 과금 상태 확인하기
+
+---
+
+### 실서비스 권장 구조
+
+실서비스에서는 보안을 위해 별도의 백엔드 서버를 두는 방식이 권장됩니다.
+
+```text
+React Frontend
+→ Backend Server
 → OpenAI API
-```
-
-### 해결 방법
-
-1. 프로젝트 루트에 `.env` 파일 생성
-2. `.env`에 OpenAI API Key 저장
-3. `api_mid_server.js`에서 `dotenv`로 API Key 로드
-4. React는 OpenAI API가 아니라 미들웨어 서버로 요청
-5. 미들웨어 서버가 OpenAI API 호출을 대신 수행
-
-`.env` 예시:
-
-```env
-OPENAI_API_KEY=sk-본인의_API_KEY
-```
-
-실행:
-
-```bash
-node api_mid_server.js
 ```
 
 ---
 
-## 2. Payload 10000KB 이상으로 저장이 실패하는 문제
+## 2. Payload 용량 초과 문제
 
 ### 문제 상황
 
-현재 시스템은 OpenAI가 생성한 이미지를 base64 Data URL 형태로 `coverImageUrl`에 저장할 수 있습니다.
+OpenAI가 생성한 이미지를 base64 Data URL 형태로 저장할 경우 문자열 길이가 매우 길어질 수 있습니다.
 
 예시:
 
@@ -67,50 +62,102 @@ node api_mid_server.js
 }
 ```
 
-이 방식은 정상적으로 동작할 수 있지만, 이미지 품질이 높거나 크기가 커지면 base64 문자열이 매우 길어집니다.
-그 결과 `db.json`에 저장할 때 Payload 용량 제한에 걸릴 수 있습니다.
+고해상도 이미지 생성 시 json-server 저장 과정에서 Payload 초과 오류가 발생할 수 있습니다.
+
+---
 
 ### 대표 증상
 
 - 도서 등록 실패
 - 도서 수정 실패
-- 이미지 생성 후 저장이 안 됨
+- 저장 요청 실패
 - `PayloadTooLargeError`
 - `request entity too large`
-- 10000KB 이상 Payload 오류
+
+---
 
 ### 원인
 
-base64는 실제 이미지 파일보다 문자열 크기가 커지는 경향이 있습니다.
-따라서 고품질 이미지 또는 큰 이미지 크기를 선택하면 `coverImageUrl` 필드 하나만으로도 매우 큰 데이터가 됩니다.
+base64 문자열은 일반 이미지 파일보다 크기가 커질 수 있습니다.
 
-### 해결 방법
+특히:
+- 큰 해상도
+- 높은 품질
+- 긴 이미지 데이터
 
-- 이미지 품질을 낮게 설정
-- 이미지 크기를 낮게 설정
-- 너무 큰 base64 이미지는 저장하지 않도록 제한
-- 생성 전 비용 및 용량 안내 제공
-- 향후 개선안으로 이미지 파일은 서버에 저장하고, `db.json`에는 URL만 저장하는 방식 검토
+조합 시 저장 크기가 급격히 증가합니다.
 
 ---
 
-## 3. 이미지 생성이 실패하는 문제
+### 해결 방법
+
+- 이미지 품질 낮추기
+- 이미지 크기 줄이기
+- 저장 가능한 최대 크기 제한
+- 필요 시 기본 이미지 사용
+- 향후 이미지 서버 분리 고려
+
+---
+
+## 3. 이미지 생성 실패 문제
 
 ### 원인 후보
 
-- `api_mid_server.js`가 실행되지 않음
-- `.env` 파일이 없음
-- `OPENAI_API_KEY`가 잘못됨
+- API Key 오류
 - OpenAI 사용량 초과
 - 네트워크 오류
-- 요청 옵션 오류
+- fetch 요청 옵션 오류
+- OpenAI 서버 응답 실패
+
+---
 
 ### 해결 방법
 
-- `node api_mid_server.js` 실행 확인
-- `.env` 파일 위치 확인
-- API Key 확인
-- OpenAI 계정 사용량 확인
-- 브라우저 콘솔과 Node 서버 로그 확인
+- API Key 다시 입력
+- OpenAI 결제 및 사용량 확인
+- 브라우저 콘솔 로그 확인
+- fetch 요청 body 구조 확인
+- 네트워크 상태 확인
 
 ---
+
+## 4. json-server 실행 실패
+
+### 대표 증상
+
+- `localhost:3000/books` 접속 실패
+- fetch 실패
+- `Failed to fetch`
+
+---
+
+### 해결 방법
+
+```bash
+npx json-server --watch db.json --port 3000
+```
+
+추가 확인:
+- 포트 충돌 여부
+- db.json 존재 여부
+- Node.js 설치 여부
+
+---
+
+## 5. CORS 또는 네트워크 오류
+
+### 대표 증상
+
+- OpenAI 요청 실패
+- fetch 에러
+- 브라우저 콘솔 오류 발생
+
+---
+
+### 해결 방법
+
+- 인터넷 연결 상태 확인
+- 브라우저 새로고침
+- API 요청 URL 확인
+- Authorization 헤더 확인
+- OpenAI 서버 상태 확인

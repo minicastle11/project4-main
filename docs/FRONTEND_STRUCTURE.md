@@ -2,21 +2,26 @@
 
 ## 1. 전체 구조
 
+현재 저장소는 Vite + React 기반 SPA로 구성되어 있습니다.
+
 ```text
 project4-main/
-├─ api_mid_server.js
 ├─ db.json
 ├─ package.json
 ├─ README.md
 ├─ docs/
+├─ public/
+├─ test_src/
 └─ src/
    ├─ components/
    │  ├─ Header.jsx
+   │  ├─ Lower.jsx
    │  ├─ InputInfo.jsx
    │  ├─ Dropdown.jsx
    │  ├─ MaskedApiKeyInput.jsx
    │  ├─ CreateForm.jsx
    │  ├─ CreateImageForm.jsx
+   │  ├─ CreateImagePreview.jsx
    │  ├─ UpdateForm.jsx
    │  ├─ UpdateImageControls.jsx
    │  └─ UpdateImagePreview.jsx
@@ -31,6 +36,8 @@ project4-main/
    ├─ App.css
    └─ main.jsx
 ```
+
+> 현재 코드 기준으로 `api_mid_server.js`는 필수 프론트엔드 구조에 포함하지 않습니다. AI 이미지는 등록/수정 컴포넌트에서 OpenAI Images API를 직접 호출합니다.
 
 ---
 
@@ -84,7 +91,7 @@ Home 화면을 담당합니다.
 ### 역할
 
 - 도서 목록 렌더링
-- 검색 필터링
+- 검색 필터링 결과 표시
 - 상세보기 모달 표시
 - 삭제/좋아요/조회수/수정 이동 처리
 
@@ -99,11 +106,16 @@ Create.jsx
 → CreateForm.jsx
 ```
 
+### 역할
+
+- `CreateForm` 렌더링
+- 등록 완료 또는 취소 시 목록 화면 이동 흐름 연결
+
 ---
 
 ## 6. components/CreateForm.jsx
 
-도서 등록 폼의 전체 레이아웃을 담당합니다.
+도서 등록 폼의 전체 레이아웃과 입력 상태를 담당합니다.
 
 ```text
 CreateForm.jsx
@@ -111,11 +123,19 @@ CreateForm.jsx
 └─ CreateImageForm.jsx
 ```
 
+### 주요 상태
+
+- `title`
+- `author`
+- `content`
+- `quality`
+- `coverImageUrl`
+
 ---
 
 ## 7. components/InputInfo.jsx
 
-Create와 Update에서 공통으로 사용하는 입력 컴포넌트입니다.
+Create와 Update에서 공통으로 사용하는 도서 정보 입력 컴포넌트입니다.
 
 ### 입력 항목
 
@@ -133,11 +153,12 @@ Create와 Update에서 공통으로 사용하는 입력 컴포넌트입니다.
 
 - API Key 입력 UI
 - 이미지 품질 선택
-- 이미지 크기 옵션 개선 예정
+- 이미지 크기 선택
 - 이미지 생성 비용 안내
-- 이미지 생성 요청
+- OpenAI Images API 직접 호출
 - base64 Data URL 미리보기
 - 등록 시 신규 도서 객체 생성
+- 필수 입력값 검증
 
 ### 현재 이미지 저장 흐름
 
@@ -209,20 +230,63 @@ UpdateForm.jsx
 
 ---
 
-## 13. api_mid_server.js와 프론트엔드 관계
+## 13. components/Header.jsx
 
-`api_mid_server.js`는 프론트엔드 컴포넌트는 아니지만, AI 이미지 생성 기능이 정상 동작하기 위해 필요한 Node/Express 미들웨어 서버입니다.
+상단 내비게이션을 담당합니다.
 
 ### 역할
 
-- `.env`의 `OPENAI_API_KEY` 로드
-- OpenAI Images API 호출 대행
-- 프론트엔드에 OpenAI API Key가 직접 노출되는 문제 완화
+- Home, 목록, 등록 화면으로 이동할 수 있는 공통 헤더 제공
+- 전체 페이지에서 동일한 내비게이션 경험 제공
 
-### 실행
+---
 
-```bash
-node api_mid_server.js
+## 14. components/Lower.jsx
+
+하단 영역을 담당하는 공통 컴포넌트입니다.
+
+### 역할
+
+- 전체 페이지 하단 UI 구성
+- `App.jsx`에서 Header와 함께 공통 레이아웃으로 사용
+
+---
+
+## 15. 데이터 흐름
+
+### 도서 CRUD 흐름
+
+```text
+App.jsx
+→ fetch http://localhost:3000/books
+→ json-server
+→ db.json
+→ React 상태 업데이트
+→ 화면 반영
+```
+
+### AI 이미지 생성 흐름
+
+```text
+CreateImageForm.jsx 또는 UpdateForm.jsx
+→ 사용자가 API Key 입력
+→ OpenAI Images API 호출
+→ b64_json 응답 수신
+→ Data URL 변환
+→ coverImageUrl 상태 반영
+→ 등록/수정 시 json-server 저장
 ```
 
 ---
+
+## 16. 실행 시 필요한 서버
+
+```bash
+npm run dev
+```
+
+```bash
+npx json-server@0.17.4 --watch db.json --port 3000
+```
+
+현재 문서 기준으로 별도 미들웨어 서버 실행 명령은 제외합니다.
