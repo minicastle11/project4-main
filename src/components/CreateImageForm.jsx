@@ -1,13 +1,28 @@
 import {useState, useEffect} from 'react'
 import Dropdown from './Dropdown'
 
+function getSavableImageUrl(imageUrl) {
+  const invalidPreviewImages = [
+    '/test_src/error.png',
+    './test_src/error.png',
+    '/test_src/loading.gif',
+    './test_src/loading.gif',
+  ]
+
+  if (!imageUrl || invalidPreviewImages.includes(imageUrl)) {
+    return '/noImage.jpg'
+  }
+
+  return imageUrl
+}
+
 function CreateImageForm({title, author, content, onAddBook}) {
     const [today, setToday] = useState('');
     const [createdAt, setCreatedAt] = useState('');
     const [updatedAt, setUpdatedAt] = useState('');
     const [quality, setQuality] = useState('medium');
     const [ai_api_key, setAi_api_key] = useState('');
-    const [coverImageUrl, setCoverImageUrl] = useState('./test_src/01.png');
+    const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png');
     
     const [loading, setLoading] = useState(false);
 
@@ -126,19 +141,20 @@ function CreateImageForm({title, author, content, onAddBook}) {
 
                 <div className="create-action-row">
                     <button
-                        type="button"
-                        className="create-preview-button"
-                        onClick={handleFinalForm}
+                    type="button"
+                    className="create-preview-button"
+                    onClick={handlePreviewImage}
+                    disabled={loading}
                     >
-                        이미지 미리보기
+                    {loading ? '이미지 생성 중...' : '이미지 미리보기'}
                     </button>
 
                     <button
-                        type="button"
-                        className="create-submit-button"
-                        onClick={handleFinalForm}
+                    type="button"
+                    className="create-submit-button"
+                    onClick={handleSubmitBook}
                     >
-                        등록하기
+                    등록하기
                     </button>
                 </div>
             </div>

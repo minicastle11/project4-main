@@ -51,17 +51,17 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
     return books.filter((item) => {
       const title = item.title || ''
       const author = item.author || ''
-      const content = item.content || ''
-      const subtitle = item.subtitle || ''
+
 
       return (
         title.toLowerCase().includes(q) ||
-        author.toLowerCase().includes(q) ||
-        content.toLowerCase().includes(q) ||
-        subtitle.toLowerCase().includes(q)
+        author.toLowerCase().includes(q)
       )
     })
   }, [query, books])
+
+  const isSearching = query.trim().length > 0
+  const isEmpty = filteredItems.length === 0
 
   const handleOpen = (item) => {
     setSelectedId(item.id)
@@ -104,11 +104,17 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
   return (
     <div className="list-page-wrap">
       {/* UI/레이아웃팀 담당: List 페이지 카드 그리드 레이아웃 */}
-      <section className="list-book-grid">
-        {filteredItems.map((item) => (
-          <Card key={item.id} item={item} onClick={() => handleOpen(item)} />
-        ))}
-      </section>
+      {isEmpty ? (
+        <p className="list-state-message">
+          {isSearching ? '검색 결과가 없습니다. 다른 검색어를 입력해 보세요.' : '등록된 도서가 없습니다.'}
+        </p>
+      ) : (
+        <section className="list-book-grid">
+          {filteredItems.map((item) => (
+            <Card key={item.id} item={item} onClick={() => handleOpen(item)} />
+          ))}
+        </section>
+      )}
 
       {open && selected && (
         <div className="book-modal-overlay" onClick={handleClose}>

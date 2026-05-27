@@ -27,10 +27,9 @@ function InputInfo({ title, setTitle, author, setAuthor, content, setContent }) 
           value={content}
           placeholder="내용"
           rows={8}
-          maxLength={100}
           onChange={(e) => setContent(e.target.value)}
         />
-        <span className="create-count">{content.length}/100</span>
+        {/* <span className="create-count">{content.length}자</span> */}
       </label>
     </>
   )
