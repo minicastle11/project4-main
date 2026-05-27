@@ -182,11 +182,7 @@ function CreateImageForm({ title, author, content, onAddBook }) {
                 <strong>이미지 미리보기</strong>
                 <p>선택된 품질: {quality}</p>
                 <span>
-<<<<<<< HEAD
                     입력 내용을 작성한 뒤 이미지 미리보기를 누르면 표지를 먼저 확인할 수 있습니다.
-=======
-                    입력 작성 후 이미지 미리보기를 누르면 표지가 먼저 생성됩니다.
->>>>>>> 78f61637299eb60449cd51b9d0dd14f64e4ada3a
                 </span>
             </aside>
         </form>

@@ -119,7 +119,6 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
               </button>
             </div>
 
-<<<<<<< HEAD
            <div className="book-detail-main">
             <div className="book-detail-image-wrap">
     <img
@@ -138,18 +137,6 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
 
             {/* UI/레이아웃팀 담당: 좋아요 개수 표시 UI만 배치 */}
             {/* TODO: 좋아요 클릭 기능과 PATCH /books/id 연결은 CRUD 담당자가 처리 */}
-=======
-            <img
-              className="book-detail-image"
-              src={
-                selected.coverImageUrl && selected.coverImageUrl.trim()
-                  ? selected.coverImageUrl
-                  : selected.image || '/noImage.jpg'
-              }
-              alt={selected.title}
-            />
-            <p className="modal-subtitle">{selected.content}</p>
->>>>>>> 78f61637299eb60449cd51b9d0dd14f64e4ada3a
             <div className="book-detail-actions">
               <div className="book-like-info">
                 <span>좋아요</span>
