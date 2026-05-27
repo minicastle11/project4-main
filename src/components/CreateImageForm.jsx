@@ -16,123 +16,117 @@ function getSavableImageUrl(imageUrl) {
   return imageUrl
 }
 
-function CreateImageForm({title, author, content, onAddBook}) {
-    const [today, setToday] = useState('');
-    const [createdAt, setCreatedAt] = useState('');
-    const [updatedAt, setUpdatedAt] = useState('');
-    const [quality, setQuality] = useState('medium');
-    const [ai_api_key, setAi_api_key] = useState('');
-    const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png');
-    
-    const [loading, setLoading] = useState(false);
+function CreateImageForm({ title, author, content, onAddBook }) {
+  const [createdAt, setCreatedAt] = useState('')
+  const [updatedAt, setUpdatedAt] = useState('')
+  const [quality, setQuality] = useState('medium')
+  const [apiKey, setApiKey] = useState('')
+  const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png')
+  const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        const day = new Date();
-        const day_form = `${day.getFullYear()}년 ${day.getMonth()+1}월 ${day.getDate()}일`;
-        setToday(day_form);
-        setCreatedAt(day);
-        setUpdatedAt(day);
-    }, []);
+  useEffect(() => {
+    const now = new Date().toISOString()
+    setCreatedAt(now)
+    setUpdatedAt(now)
+  }, [])
 
-    const handlePreviewImage = async () => {
-        const prompt = `
+  const handlePreviewImage = async () => {
+    const prompt = `
                         # 역할
-                        너는 북커버 제작 담당자야. 
-                        
+                        너는 북커버 제작 담당자야.
+
                         # 지침
                         - 북커버의 앞면 표지만을 보여줄 것
                         - 전문적인 북커버 디자인, 높은 퀄리티의 일러스트레이션, 두드러진 시각적 표현, 작품에 적합한 안전성
                         - 이야기의 분위기나 무드를 포함
-                        
+
                         # 책 정보
                         - 제목 : "${title}"
                         - 내용 요약 : ${content}.
                         `
-        try {
-            if (!loading) {
-                setCoverImageUrl('./test_src/loading.gif');
-                setLoading(true);
-            }
 
-            const res = await fetch('https://api.openai.com/v1/images/generations', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${apiKey}`,
-                },
-                body: JSON.stringify({
-                model: 'gpt-image-1',
-                prompt,
-                n: 1,
-                size: '1024x1536',
-                quality,
-                output_format: 'png',
-                }),
-            }),
+    try {
+      setLoading(true)
+      setCoverImageUrl('/test_src/loading.gif')
 
-            if (!res.ok) {
-                setCoverImageUrl('./test_src/error.png');
-                const errData = await res.json().catch(() => ({}));
-                const status = res.status;
-                if (status === 401) throw new Error('API Key가 올바르지 않습니다. 확인 후 다시 시도해주세요.');
-                if (status === 429) throw new Error('요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.');
-                throw new Error(errData?.error?.message || 'OpenAI 이미지 생성에 실패했습니다.');
-            }
+      const res = await fetch('https://api.openai.com/v1/images/generations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-image-1',
+          prompt,
+          n: 1,
+          size: '1024x1536',
+          quality,
+          output_format: 'png',
+        }),
+      })
 
-            const data = await res.json();
-            const b64Json = data?.data?.[0]?.b64_json;
-            if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
+      if (!res.ok) {
+        setCoverImageUrl('/test_src/error.png')
+        const errData = await res.json().catch(() => ({}))
+        const status = res.status
+        if (status === 401) throw new Error('API Key가 올바르지 않습니다. 확인 후 다시 시도해주세요.')
+        if (status === 429) throw new Error('요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.')
+        throw new Error(errData?.error?.message || 'OpenAI 이미지 생성에 실패했습니다.')
+      }
 
-            const imageUrl = `data:image/png;base64,${b64Json}`;
-            setCoverImageUrl(imageUrl);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+      const data = await res.json()
+      const b64Json = data?.data?.[0]?.b64_json
+      if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.')
 
-    const handleSubmitBook = async () => {
-        const generateId = () => Math.floor(Math.random() * 1000000);
+      setCoverImageUrl(`data:image/png;base64,${b64Json}`)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-        const newBook = {
-            id: generateId(),
-            title,
-            content,
-            author,
-            likes: 0,
-            views: 0,
-            coverImageUrl: getSavableImageUrl(coverImageUrl),
-            createdAt,
-            updatedAt,
-        };
+  const handleSubmitBook = async () => {
+    const newBook = {
+      id: Math.floor(Math.random() * 1000000),
+      title,
+      author,
+      content,
+      likes: 0,
+      views: 0,
+      coverImageUrl: getSavableImageUrl(coverImageUrl),
+      createdAt,
+      updatedAt: new Date().toISOString(),
+    }
 
-        if (onAddBook) {
-            await onAddBook(newBook);
-            return;
-        }
+    if (onAddBook) {
+      await onAddBook(newBook)
+      return
+    }
 
-        try {
-            const res = await fetch('http://localhost:3000/books', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newBook),
-            });
-            console.log(res.ok);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
+    try {
+      const res = await fetch('http://localhost:3000/books', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBook),
+      })
+      if (!res.ok) {
+        throw new Error('도서 등록에 실패했습니다.')
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+    
     return (
         <form className="create-write-layout">
             <div className="create-write-form">
                 <label>
                     api키
                     <input
-                        value={ai_api_key}
+                        value={apiKey}
                         placeholder="api키"
-                        onChange={(e) => setAi_api_key(e.target.value)}
+                        onChange={(e) => setApiKey(e.target.value)}
                     />
                 </label>
 
@@ -143,10 +137,10 @@ function CreateImageForm({title, author, content, onAddBook}) {
 
                 <div className="create-action-row">
                     <button
-                    type="button"
-                    className="create-preview-button"
-                    onClick={handlePreviewImage}
-                    disabled={loading}
+                        type="button"
+                        className="create-preview-button"
+                        onClick={handlePreviewImage}
+                        disabled={loading}
                     >
                     {loading ? '이미지 생성 중...' : '이미지 미리보기'}
                     </button>
