@@ -92,18 +92,8 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
     }
   }
 
-  // if (loading) {
-  //   return <p className="list-state-message">도서 목록을 불러오는 중입니다.</p>
-  // }
-
-  // if (error) {
-  //   return <p className="list-state-message">{error}</p>
-  // }
-
-
   return (
     <div className="list-page-wrap">
-      {/* UI/레이아웃팀 담당: List 페이지 카드 그리드 레이아웃 */}
       {isEmpty ? (
         <p className="list-state-message">
           {isSearching ? '검색 결과가 없습니다. 다른 검색어를 입력해 보세요.' : '등록된 도서가 없습니다.'}
@@ -118,20 +108,18 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
 
       {open && selected && (
         <div className="book-modal-overlay" onClick={handleClose}>
-          {/* UI/레이아웃팀 담당: 상세 모달 UI/레이아웃 정리 */}
           <section className="book-detail-modal" onClick={(e) => e.stopPropagation()}>
             <div className="book-detail-header">
               <div>
                 <h3>{selected.title}</h3>
-                {/* UI/레이아웃팀 담당: 작가 이름을 책 제목 아래에 배치 */}
                 <p className="book-detail-author">작가: {selected.author || '저자 미상'}</p>
               </div>
-
               <button type="button" className="book-detail-close" onClick={handleClose}>
                 닫기
               </button>
             </div>
 
+<<<<<<< HEAD
            <div className="book-detail-main">
             <div className="book-detail-image-wrap">
     <img
@@ -150,8 +138,19 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
 
             {/* UI/레이아웃팀 담당: 좋아요 개수 표시 UI만 배치 */}
             {/* TODO: 좋아요 클릭 기능과 PATCH /books/id 연결은 CRUD 담당자가 처리 */}
+=======
+            <img
+              className="book-detail-image"
+              src={
+                selected.coverImageUrl && selected.coverImageUrl.trim()
+                  ? selected.coverImageUrl
+                  : selected.image || '/noImage.jpg'
+              }
+              alt={selected.title}
+            />
+            <p className="modal-subtitle">{selected.content}</p>
+>>>>>>> 78f61637299eb60449cd51b9d0dd14f64e4ada3a
             <div className="book-detail-actions">
-              
               <div className="book-like-info">
                 <span>좋아요</span>
                 <strong>{selected.likes || 0}</strong>
