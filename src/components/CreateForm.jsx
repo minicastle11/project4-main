@@ -9,7 +9,6 @@ function CreateForm({ onAddBook,onCancel }) {
 
   return (
     <section className="create-write-page">
-      <h5 className="create-write-title">새글 생성</h5>
         <div className="create-write-form">
           <h1 className="create-write-title">내용 생성</h1>
           <InputInfo
