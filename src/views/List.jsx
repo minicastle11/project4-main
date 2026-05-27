@@ -132,16 +132,21 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
               </button>
             </div>
 
-            <img
-              className="book-detail-image"
-              src={
-                selected.coverImageUrl && selected.coverImageUrl.trim()
-                  ? selected.coverImageUrl
-                  : selected.image || '/noImage.jpg'
-              }
-              alt={selected.title}
-            />
-            <p className="modal-subtitle">{selected.content}</p>
+           <div className="book-detail-main">
+            <div className="book-detail-image-wrap">
+    <img
+      className="book-detail-image"
+      src={
+        selected.coverImageUrl && selected.coverImageUrl.trim()
+          ? selected.coverImageUrl
+          : selected.image || '/noImage.jpg'
+      }
+      alt={selected.title}
+    />
+  </div>
+
+  <p className="modal-subtitle">{selected.content}</p>
+</div>
 
             {/* UI/레이아웃팀 담당: 좋아요 개수 표시 UI만 배치 */}
             {/* TODO: 좋아요 클릭 기능과 PATCH /books/id 연결은 CRUD 담당자가 처리 */}
