@@ -38,7 +38,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
         // 1. AI Image 생성
         try {
             if (loading === false) {
-                setCoverImageUrl('./test_src/loading.gif');
+                setShowImg('./test_src/loading.gif');
                 setLoading(true);
             }
             const res = await fetch("http://localhost:3001/api/image", {

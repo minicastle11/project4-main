@@ -65,15 +65,24 @@ function App() {
   }
 
   const handleDelete = async (id) => {
-    try {
-      await fetch(`${bookURL}/${id}`, {
-        method: 'DELETE',
-      })
-      setBooks(books.filter((book) => book.id !== id))
-    } catch (err) {
-      console.error(err)
+  try {
+    const book = books.find((b) => b.id === id);
+
+    if (book?.coverImageUrl) {
+      const filename = book.coverImageUrl.split("/images/")[1]; // "cover_xxx.png"
+      await fetch(`http://localhost:3001/api/image/${filename}`, {
+        method: "DELETE",
+      });
     }
+
+    await fetch(`${bookURL}/${id}`, {
+      method: 'DELETE',
+    })
+    setBooks(books.filter((book) => book.id !== id))
+    } catch (err) {
+    console.error(err)
   }
+};
 
   const handleLike = async (id) => {
     try {

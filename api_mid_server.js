@@ -29,7 +29,7 @@ app.post("/api/image", async (req, res) => {
 
     const data = await response.json();
 
-    // ✅ b64_json을 파일로 저장
+    // b64_json을 파일로 저장
     const b64Json = data?.data?.[0]?.b64_json;
     if (!b64Json) return res.status(500).json({ error: "이미지 데이터 없음" });
 
@@ -40,9 +40,25 @@ app.post("/api/image", async (req, res) => {
     fs.mkdirSync(path.join(__dirname, "public/images"), { recursive: true });
     fs.writeFileSync(savePath, Buffer.from(b64Json, "base64"));
 
-    // ✅ URL만 반환
+    // URL만 반환
     res.json({ imageUrl: `http://localhost:3001/images/${filename}` });
 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/image/:filename", (req, res) => {
+  try {
+    const { filename } = req.params;
+    const filePath = path.join(__dirname, "public/images", filename);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "파일이 존재하지 않습니다." });
+    }
+
+    fs.unlinkSync(filePath);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
