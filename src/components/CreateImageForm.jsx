@@ -17,12 +17,17 @@ function getSavableImageUrl(imageUrl) {
   return imageUrl
 }
 
-function CreateImageForm({ title, author, content, onAddBook, onCancel }) {
+function CreateImageForm({ title, 
+                           author,
+                           content,
+                           quality, setQuality,
+                           coverImageUrl, setCoverImageUrl,
+                           onAddBook, onCancel }) {
+
   const [createdAt, setCreatedAt] = useState('')
   const [updatedAt, setUpdatedAt] = useState('')
-  const [quality, setQuality] = useState('medium')
   const [apiKey, setApiKey] = useState('')
-  const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png')
+  // const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -125,26 +130,18 @@ function CreateImageForm({ title, author, content, onAddBook, onCancel }) {
 
   }
     
-    return (
+    return (<>
         <form className="create-write-layout">
             <div className="create-write-form">
                 <label>
                     api키
-
-                    <input
-                        type= "password"
-                        value={apiKey}
-                        placeholder="api키"
-                        onChange={(e) => setApiKey(e.target.value)}
-                    />
                     <MaskedApiKeyInput value={apiKey} onChange={setApiKey} />
                 </label>
 
                 <div className="create-quality-group">
                     <p>품질</p>
-                    <Dropdown value={quality} onChange={setQuality} />
+                    <Dropdown value={quality} onChange={(e) => setQuality(e.target.value)} />
                 </div>
-
                 <div className="create-action-row">
                     <button
                         type="button"
@@ -172,19 +169,8 @@ function CreateImageForm({ title, author, content, onAddBook, onCancel }) {
                     </button>
                 </div>
             </div>
-
-            <aside className="create-preview-card">
-                <div className="create-preview-image-box">
-                    <img src={coverImageUrl} alt="book cover" />
-                </div>
-
-                <strong>이미지 미리보기</strong>
-                <p>선택된 품질: {quality}</p>
-                <span>
-                    입력 작성 후 이미지 생성하기를 누르고, 기다리시면 생성된 이미지가 보입니다.
-                </span>
-            </aside>
         </form>
+  </>
     )
 };
 
