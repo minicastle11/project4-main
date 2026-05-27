@@ -41,16 +41,12 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBook),
       })
-    } catch (err) {
-      console.error(err)
-    }
 
-    try {
-      const res = await fetch(bookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBook),
-      })
+      if (!res.ok) {
+        const errorText = await res.text()
+        throw new Error(errorText || '도서 등록에 실패했습니다.')
+      }
+
       const saved = await res.json()
 
       setBooks((prevBooks) => [saved, ...prevBooks])
@@ -88,30 +84,41 @@ function App() {
     }
   }
 
+  //이미지 삭제시 undefined 404에러 보완 조치
   const handleDelete = async (id) => {
-  try {
-    // 삭제할 book 찾기
-    const book = books.find((b) => b.id === id);
+    try {
+      const book = books.find((b) => String(b.id) === String(id))
 
-    // 이미지 파일 삭제
-    if (book?.coverImageUrl) {
-      const filename = book.coverImageUrl.split("/images/")[1]; // "cover_xxx.png"
-      await fetch(`http://localhost:3001/api/image/${filename}`, {
-        method: "DELETE",
-      });
+      // 이미지 서버에 저장된 이미지일 때만 이미지 파일 삭제 요청
+      if (book?.coverImageUrl?.includes('/images/')) {
+        const filename = book.coverImageUrl.split('/images/')[1]
+
+        if (filename) {
+          await fetch(`http://localhost:3001/api/image/${filename}`, {
+            method: 'DELETE',
+          })
+        }
+      }
+
+      // json-server에서 도서 삭제
+      const res = await fetch(`${bookURL}/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        const errorText = await res.text()
+        throw new Error(errorText || '삭제에 실패했습니다.')
+      }
+
+      // 프론트 상태 갱신
+      setBooks((prevBooks) =>
+        prevBooks.filter((b) => String(b.id) !== String(id))
+      )
+    } catch (err) {
+      console.error(err)
+      setError(err.message || '삭제에 실패했습니다.')
     }
-
-    
-    await fetch(`${bookURL}/${id}`, {
-       method: "DELETE" 
-      });
-
-    setBooks(books.filter((b) => b.id !== id));
-    if (!res.ok) {throw new Error('삭제에 실패했습니다.')}
-  } catch (err) {
-    console.error(err);
   }
-};
 
   const handleLike = async (id) => {
     try {
