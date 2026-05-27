@@ -154,7 +154,7 @@ function CreateImageForm({ title,
 
                 <div className="create-quality-group">
                     <p>품질</p>
-                    <Dropdown value={quality} onChange={(e) => setQuality(e.target.value)} />
+                    <Dropdown value={quality} onChange={setQuality} />
                 </div>
 
                 <div className="create-quality-group">
