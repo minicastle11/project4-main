@@ -25,6 +25,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
     const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png');
     
     const [loading, setLoading] = useState(false);
+    const [showImg, setShowImg] = useState('');
 
     useEffect(() => {
         const day = new Date();
@@ -35,6 +36,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
     }, []);
 
     const handleFinalForm = async () => {
+        let finalImageUrl = '';
         const prompt = `
                         # 역할
                         너는 북커버 제작 담당자야. 
@@ -51,7 +53,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
         // 1. AI Image 생성
         try {
             if (loading === false) {
-                setCoverImageUrl('./test_src/loading.gif');
+                setShowImg('./test_src/loading.gif');
                 setLoading(true);
             }
             const res = await fetch("http://localhost:3001/api/image", {
@@ -81,47 +83,38 @@ function CreateImageForm({title, author, content, onAddBook}) {
             }
 
             const data = await res.json();
-            console.log("OPENAI RESPONSE:", data);
-            const b64Json = data?.data?.[0]?.b64_json;
-            if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
-            
-            const imageUrl = `data:image/png;base64,${b64Json}`;
-            setCoverImageUrl(imageUrl);
+            const imageUrl = data?.imageUrl;  // ✅ URL만 받음
+            if (!imageUrl) throw new Error('이미지 URL을 받지 못했습니다.');
+
+            finalImageUrl = imageUrl;         // ✅ 로컬 변수에도 저장
+            setCoverImageUrl(imageUrl);       // UI 표시용
         } catch (err) { console.error(err); }
         
         const generateId = () => {
             return Math.floor(Math.random() * 1000000)
         }
 
-        const newBook = await {
-            id : generateId(),
+        const newBook = {
             title,
             content,
             author,
             likes: 0,
             views: 0,
-            coverImageUrl,
+            coverImageUrl: finalImageUrl,
             createdAt,
             updatedAt,
         }
             
         if (onAddBook) {
             await onAddBook(newBook)
-            return
-        }
-
-        try {
-            const res = await fetch('http://localhost:3000/books', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(newBook)
-            })
-            console.log(res.ok)
-        } catch (err) {
-            console.error(err)
+            return;
         }
     }
     
+    function handleImgView() {
+        setShowImg(coverImageUrl);
+    }
+
     return (
         <form className="create-write-layout">
             <div className="create-write-form">
@@ -141,10 +134,9 @@ function CreateImageForm({title, author, content, onAddBook}) {
 
                 <div className="create-action-row">
                     <button
-                    type="button"
-                    className="create-preview-button"
-                    onClick={handlePreviewImage}
-                    disabled={loading}
+                        type="button"
+                        className="create-preview-button"
+                        onClick={handleImgView}
                     >
                     {loading ? '이미지 생성 중...' : '이미지 미리보기'}
                     </button>
@@ -161,7 +153,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
 
             <aside className="create-preview-card">
                 <div className="create-preview-image-box">
-                    <img src={coverImageUrl} alt="book cover" />
+                    <img src={showImg} alt="book cover" />
                 </div>
 
                 <strong>이미지 미리보기</strong>

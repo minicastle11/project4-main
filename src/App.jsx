@@ -41,11 +41,16 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBook),
       })
+    } catch (err) {
+      console.error(err)
+    }
 
-      if (!res.ok) {
-        throw new Error('도서 등록에 실패했습니다.')
-      }
-
+    try {
+      const res = await fetch(bookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBook),
+      })
       const saved = await res.json()
 
       setBooks((prevBooks) => [saved, ...prevBooks])
@@ -84,22 +89,29 @@ function App() {
   }
 
   const handleDelete = async (id) => {
-    try {
-      const res = await fetch(`${bookURL}/${id}`, {
-        method: 'DELETE',
-      })
+  try {
+    // 삭제할 book 찾기
+    const book = books.find((b) => b.id === id);
 
-      if (!res.ok) {
-        throw new Error('도서 삭제에 실패했습니다.')
-      }
-
-      setBooks((prevBooks) =>
-        prevBooks.filter((book) => String(book.id) !== String(id))
-      )
-    } catch (err) {
-      console.error(err)
+    // 이미지 파일 삭제
+    if (book?.coverImageUrl) {
+      const filename = book.coverImageUrl.split("/images/")[1]; // "cover_xxx.png"
+      await fetch(`http://localhost:3001/api/image/${filename}`, {
+        method: "DELETE",
+      });
     }
+
+    
+    await fetch(`${bookURL}/${id}`, {
+       method: "DELETE" 
+      });
+
+    setBooks(books.filter((b) => b.id !== id));
+    if (!res.ok) {throw new Error('삭제에 실패했습니다.')}
+  } catch (err) {
+    console.error(err);
   }
+};
 
   const handleLike = async (id) => {
     try {
