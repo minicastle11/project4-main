@@ -17,7 +17,7 @@ function getSavableImageUrl(imageUrl) {
   return imageUrl
 }
 
-function CreateImageForm({ title, author, content, onAddBook }) {
+function CreateImageForm({ title, author, content, onAddBook, onCancel }) {
   const [createdAt, setCreatedAt] = useState('')
   const [updatedAt, setUpdatedAt] = useState('')
   const [quality, setQuality] = useState('medium')
@@ -47,6 +47,7 @@ function CreateImageForm({ title, author, content, onAddBook }) {
                         `
 
     try {
+      alert('이미지 생성 시, 비용이 발생할 수 있습니다.');
       setLoading(true)
       setCoverImageUrl('/test_src/loading.gif')
 
@@ -82,8 +83,10 @@ function CreateImageForm({ title, author, content, onAddBook }) {
       if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.')
 
       setCoverImageUrl(`data:image/png;base64,${b64Json}`)
+      alert('이미지 생성을 완료했습니다.')
     } catch (err) {
-      console.error(err)
+      console.error(err);
+      alert('이미지 생성을 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -120,18 +123,6 @@ function CreateImageForm({ title, author, content, onAddBook }) {
       return
     }
 
-    try {
-      const res = await fetch('http://localhost:3000/books', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBook),
-      })
-      if (!res.ok) {
-        throw new Error('도서 등록에 실패했습니다.')
-      }
-    } catch (err) {
-      console.error(err)
-    }
   }
     
     return (
@@ -154,7 +145,7 @@ function CreateImageForm({ title, author, content, onAddBook }) {
                         onClick={handlePreviewImage}
                         disabled={loading}
                     >
-                    {loading ? '이미지 생성 중...' : '이미지 미리보기'}
+                    {loading ? '이미지 생성 중...' : '이미지 생성하기'}
                     </button>
 
                     <button
@@ -163,6 +154,14 @@ function CreateImageForm({ title, author, content, onAddBook }) {
                     onClick={handleSubmitBook}
                     >
                     등록하기
+                    </button>
+
+                    <button
+                    type="button"
+                    className="create-preview-button"
+                    onClick={onCancel}
+                    >
+                    취소
                     </button>
                 </div>
             </div>
@@ -175,7 +174,11 @@ function CreateImageForm({ title, author, content, onAddBook }) {
                 <strong>이미지 미리보기</strong>
                 <p>선택된 품질: {quality}</p>
                 <span>
+<<<<<<< HEAD
                     입력 내용을 작성한 뒤 이미지 미리보기를 누르면 표지를 먼저 확인할 수 있습니다.
+=======
+                    입력 작성 후 이미지 생성하기를 누르고, 기다리시면 생성된 이미지가 보입니다.
+>>>>>>> 9c0d858ce9a5d3a3e3dec7cda7e3474459d281ae
                 </span>
             </aside>
         </form>

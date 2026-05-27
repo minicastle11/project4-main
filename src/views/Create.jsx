@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import CreateForm from '../components/CreateForm'
 
-function Create({ onCreate }) {
+function Create({ onCreate,onCancel }) {
+    const navigate = useNavigate();
+    
     return(
         <>
-            <CreateForm onAddBook={onCreate} />
+            <CreateForm onAddBook={onCreate} onCancel={() => navigate('/list')} />
         </>
     );
 }

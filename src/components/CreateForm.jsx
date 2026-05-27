@@ -2,7 +2,7 @@ import { useState } from 'react'
 import InputInfo from './InputInfo'
 import CreateImageForm from './CreateImageForm'
 
-function CreateForm({ onAddBook }) {
+function CreateForm({ onAddBook,onCancel }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
@@ -25,6 +25,7 @@ function CreateForm({ onAddBook }) {
             author={author}
             content={content}
             onAddBook={onAddBook}
+            onCancel={onCancel}
           />
         </div>
       </div>

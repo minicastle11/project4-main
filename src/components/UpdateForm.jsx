@@ -66,7 +66,8 @@ function UpdateForm({ initialBook, onSubmit, onCancel }) {
 - 내용 요약 : ${content}.
 `
 
-    try {
+try {
+      alert('이미지 생성 시, 비용이 발생할 수 있습니다.');
       setImageLoading(true)
       setCoverImageUrl('/test_src/loading.gif')
 
@@ -109,6 +110,7 @@ function UpdateForm({ initialBook, onSubmit, onCancel }) {
     } catch (err) {
       console.error(err)
     } finally {
+      alert('이미지 생성이 완료되었습니다.');
       setImageLoading(false)
     }
   }

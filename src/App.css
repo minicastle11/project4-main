@@ -851,9 +851,9 @@
 .create-preview-card span {
   display: block;
   color: var(--color-navy);
-  font-size: 13px;
+  font-size: 10px;
   line-height: 1.6;
-  text-align: left;
+  text-align: center;
 }
 
 .counter {

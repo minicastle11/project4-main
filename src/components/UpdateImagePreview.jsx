@@ -31,7 +31,7 @@ function UpdatePreviewCard({ coverImageUrl, title, quality }) {
       <strong>이미지 미리보기</strong>
       <p>선택된 품질: {quality}</p>
       <span>
-        수정할 내용을 입력한 뒤 이미지 미리보기를 누르면 표지를 다시 생성할 수 있습니다.
+          입력 작성 후 이미지 생성하기를 누르고, 기다리시면 생성된 이미지가 보입니다.
       </span>
     </aside>
   )

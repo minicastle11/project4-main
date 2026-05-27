@@ -51,8 +51,10 @@ function App() {
       const saved = await res.json()
  
       setBooks((prevBooks) => [saved, ...prevBooks])
+      alert('도서가 등록되었습니다.')
       navigate('/list')
     } catch (err) {
+      alert('도서 등록에 실패했습니다.')
       console.error(err)
       setError(err.message || '도서 등록에 실패했습니다.')
     }
@@ -60,12 +62,14 @@ function App() {
 
   const handleUpdateBook = async (id, updatedFields) => {
     try {
+      
       const res = await fetch(`${bookURL}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
       })
-
+      // Error: Payload too large. Limit: 102400 bytes
+      // res.ok === false 
       if (!res.ok) {
         throw new Error('도서 수정에 실패했습니다.')
       }
@@ -78,8 +82,10 @@ function App() {
         )
       )
 
+      alert('도서가 수정되었습니다.')
       navigate('/list')
     } catch (err) {
+      alert('도서가 수정에 실패했습니다.')
       console.error(err)
     }
   }
@@ -119,7 +125,9 @@ function App() {
       setBooks((prevBooks) =>
         prevBooks.filter((b) => String(b.id) !== String(id))
       )
+      alert('도서를 삭제했습니다')
     } catch (err) {
+      alert('도서 삭제에 실패했습니다')
       console.error(err)
       setError(err.message || '삭제에 실패했습니다.')
     }
