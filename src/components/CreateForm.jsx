@@ -36,7 +36,6 @@ function CreateForm({ onAddBook,onCancel }) {
             setCoverImageUrl={setCoverImageUrl}
           />
         </div>
-      <CreatePreviewCard coverImageUrl={coverImageUrl} quality={quality}/>
     </section>
   )
 }
