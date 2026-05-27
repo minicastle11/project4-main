@@ -10,7 +10,6 @@ function CreateForm({ onAddBook,onCancel }) {
   const [quality, setQuality] = useState('medium')
   const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png')
 
-  // console.log(onAddBook);
   return (
     <section className="create-write-page">
         <div className="create-write-form">

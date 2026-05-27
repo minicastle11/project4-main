@@ -28,7 +28,6 @@ function CreateImageForm({ title,
   const [updatedAt, setUpdatedAt] = useState('')
   const [imageSize, setImageSize] = useState('768x1024')
   const [apiKey, setApiKey] = useState('')
-  // const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
